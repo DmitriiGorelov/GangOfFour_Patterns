@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <list>
+#include <memory>
 
 class Command
 {
@@ -71,20 +72,15 @@ int main()
 {
     std::cout << "PATTERN COMMAND\n";
 
+    std::unique_ptr<Receiver1> r1{new Receiver1};
+    std::unique_ptr<Receiver2> r2{ new Receiver2 };
+
+    std::unique_ptr<SimpleCommand<Receiver1>> sc1{new SimpleCommand<Receiver1>(r1.get(), &Receiver1::Handle)};
+    std::unique_ptr<SimpleCommand<Receiver2>> sc2{new SimpleCommand<Receiver2>(r2.get(), &Receiver2::Handle) };
+
     MacroCommand mc;
-    mc.Add(new SimpleCommand<Receiver1>(new Receiver1, &Receiver1::Handle));
-    mc.Add(new SimpleCommand<Receiver2>(new Receiver2, &Receiver2::Handle));
+    mc.Add(sc1.get());
+    mc.Add(sc2.get());
 
     mc.Execute();
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
